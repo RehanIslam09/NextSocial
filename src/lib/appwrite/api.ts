@@ -328,6 +328,18 @@ export async function deletePost(postId?: string, imageId?: string) {
   if (!postId || !imageId) return;
 
   try {
+    // Step 1: Delete all save records for this post
+    const savedRecords = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.savesCollectionId,
+      [Query.equal("post", postId)]
+    );
+
+    for (const record of savedRecords.documents) {
+      await deleteSavedPost(record.$id);
+    }
+
+    // Step 2: Delete the post itself
     const statusCode = await databases.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.postCollectionId,
@@ -336,6 +348,7 @@ export async function deletePost(postId?: string, imageId?: string) {
 
     if (!statusCode) throw Error;
 
+    // Step 3: Delete the associated image file
     await deleteFile(imageId);
 
     return { status: "Ok" };
