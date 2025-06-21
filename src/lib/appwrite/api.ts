@@ -357,6 +357,7 @@ export async function deletePost(postId?: string, imageId?: string) {
   }
 }
 
+
 // ============================== LIKE / UNLIKE POST
 export async function likePost(postId: string, likesArray: string[]) {
   try {
