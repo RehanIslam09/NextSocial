@@ -6,11 +6,14 @@ import { useGetCurrentUser } from "@/lib/react-query/queries";
 const Saved = () => {
   const { data: currentUser } = useGetCurrentUser();
 
-  const savePosts = currentUser?.save.map((savePost: Models.Document) => {
-    const post = { ...savePost.post };
-    post.saveRecordId = savePost.$id; // ✅ this is what we’ll use to delete
-    return post;
-  });
+const savePosts = currentUser?.save
+  .map((savePost: Models.Document) => ({
+    ...savePost.post,
+    creator: {
+      imageUrl: currentUser.imageUrl,
+    },
+  }))
+
 
 
   return (
